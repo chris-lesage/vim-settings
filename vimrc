@@ -10,23 +10,23 @@ filetype plugin on
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 " These are supposedly colors for Neovim's terminal emulator
 
-let g:terminal_color_0 = "#202020"
-let g:terminal_color_1 = "#333333"
-let g:terminal_color_2 = "#666666"
-let g:terminal_color_3 = "#80a78c"
-let g:terminal_color_4 = "#f7c527"
-let g:terminal_color_5 = "#ffffff"
-let g:terminal_color_6 = "#333333"
-let g:terminal_color_7 = "#ffffff"
-let g:terminal_color_8 = "#ec691e"
-let g:terminal_color_9 = "#73e4f6"
-let g:terminal_color_10 = "#ffffff"
-let g:terminal_color_11 = "#a1d7f2"
-let g:terminal_color_12 = "#73e4f6"
-let g:terminal_color_13 = "#f7c527" 
-let g:terminal_color_14 = "#ec691e"
-let g:terminal_color_15 = "#f7c527"
-let g:terminal_color_16 ="#202020"
+"let g:terminal_color_0 = "#202020"
+"let g:terminal_color_1 = "#333333"
+"let g:terminal_color_2 = "#666666"
+"let g:terminal_color_3 = "#80a78c"
+"let g:terminal_color_4 = "#f7c527"
+"let g:terminal_color_5 = "#ffffff"
+"let g:terminal_color_6 = "#333333"
+"let g:terminal_color_7 = "#ffffff"
+"let g:terminal_color_8 = "#ec691e"
+"let g:terminal_color_9 = "#73e4f6"
+"let g:terminal_color_10 = "#ffffff"
+"let g:terminal_color_11 = "#a1d7f2"
+"let g:terminal_color_12 = "#73e4f6"
+"let g:terminal_color_13 = "#f7c527" 
+"let g:terminal_color_14 = "#ec691e"
+"let g:terminal_color_15 = "#f7c527"
+"let g:terminal_color_16 ="#202020"
 "let g:terminal_color_background="#202020"
 "let g:terminal_color_foreground="#eee"
 
@@ -129,6 +129,7 @@ set smartcase
 
 set tildeop
 set wildmenu
+" my favourite feature. The reason I love Vim. Prevent the cursor from hitting the top or bottom of the page.
 set scrolloff=10
 set gdefault
 set gfn=InconsolataLGC:h12
@@ -192,7 +193,7 @@ function! s:unite_settings()
 endfunction
 
 " show my existing marks with vim-signature
-:nnoremap <silent><Leader>m :SignatureToggleSigns<CR>
+":nnoremap <silent><Leader>m :SignatureToggleSigns<CR>
 
 " explore my buffers using fuzzy search using CtrlP
 let g:ctrlp_working_path_mode = 'c' " uses the CWD as the path
@@ -275,6 +276,11 @@ autocmd FileType python set omnifunc=pythoncomplete#Complete
 :set foldmethod=indent
 "not sure what this does
 :set foldlevel=99
+
+" Indent Guides options (plugin)
+let g:indent_guides_guide_size = 1
+let g:indent_guides_start_level = 2
+let g:indent_guides_enable_on_vim_startup = 1
 
 " remap start and end of line to something more memorable
 nnoremap B ^
