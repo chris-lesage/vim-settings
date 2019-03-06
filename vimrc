@@ -7,7 +7,14 @@ syntax on
 filetype on
 filetype plugin on
 
-let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+" Some neovim specific features
+if has("nvim")
+  " fancier colors plz
+  set termguicolors
+  " this shows the occurrences of substitutions in a split view, as you substitute.
+  set inccommand=split
+endif
+set termguicolors
 " These are supposedly colors for Neovim's terminal emulator
 
 "let g:terminal_color_0 = "#202020"
@@ -33,12 +40,14 @@ let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 " BE QUIET VIM!
 :set noerrorbells
 :set novisualbell
+" Disable all blinking. It is distracting and makes bracket matching confusing
+:set guicursor+=n:blinkon0
 
 " allow backspacing over everything in insert mode
 set backspace=indent,eol,start
 let macvim_hig_shift_movement = 1
 
-" put all swap and backup in a defined folder
+" put all swap and backup in a defined folder instead of peppering files everywhere.
 set backupdir=~/.vim/backup
 set directory=~/.vim/swap
 set shortmess+=I
@@ -50,8 +59,8 @@ noremap <silent><Leader>\ :TagbarToggle<cr>
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
 " append paths to common scripting places
-:set path+=/Users/sage/Dropbox/MayaScripts/
-:set path+=/Users/sage/Library/Preferences/Autodesk/maya/2015-x64/scripts/
+:set path+=/Users/chrislesage/Dropbox/MayaScripts/
+:set path+=/Users/chrislesage/Library/Preferences/Autodesk/maya/2015-x64/scripts/
 
 " set wrapping parameters
 :set wrap
@@ -70,21 +79,16 @@ filetype plugin on
 :set tabstop=4
 :set softtabstop=4
 :set shiftwidth=4
-:set noexpandtab
+:set expandtab " tabs are spaces :(
 :set autoindent
 
 set history=2000
-" width of line number column. I set this low when using vim-signature for displaying my marks
-set numberwidth=1
 
 set mouse=a
 set modelines=0
 set hidden
 set wildmenu
 set wildmode=list:longest
-
-" Disable all blinking. It is distracting and makes bracket matching confusing
-:set guicursor+=n:blinkon0
 
 " set Space as leader
 nnoremap <SPACE> <Nop>
@@ -97,24 +101,30 @@ if $TERM_PROGRAM =~ "iTerm"
     let &t_SI = "\<Esc>]50;CursorShape=1\x3" " Vertical bar in insert mode
     let &t_EI = "\<Esc>]50;CursorShape=0\x7" " Block in normal mode
 endif
-" When leaving buffer, set to absolute numbers. This is very useful for copying static lines to relative positions in the current buffer, AND as a visual clue where your focus is.
+
+" When leaving buffer, set to absolute numbers. This is very useful for copying static lines to relative positions in the current buffer when in split mode
+" AND it is useful as a visual clue where your focus is.
 au BufEnter * set relativenumber
 au BufLeave * set norelativenumber
+" Same for cursorline. Help me see which split I am currently in.
+au BufEnter * set cursorline
+au BufLeave * set nocursorline
 
 inoremap jk <ESC>
+" use the tab key for jumping between parentheses.
 nnoremap <tab> %
 vnoremap <tab> %
 " command mode accessed without shift key.
 :nnoremap ; :
 " but keep ; because it is a useful key to repeat t and f commands!
 :nnoremap : ;
-" a hack to force iceking to refresh properly. Set one then the other.
-colorscheme monokai
-colorscheme iceking
 
 set number
 set relativenumber
-set nocursorline
+" width of line number column. I really wish there was one block of margin... Instead numbers are right-aligned, so just set this number low to save space.
+set numberwidth=1
+" Highlights the current line. Use a subtle color as a cue.
+set cursorline
 
 " show search results highlight
 set hlsearch
@@ -127,24 +137,53 @@ set ignorecase
 " try to be smart about case when searching
 set smartcase
 
+nnoremap <leader>8 :%s///n<CR><C-o>
+
+
+" fzf and vim-plug
+set rtp+=/usr/local/opt/fzf
+call plug#begin()
+Plug '/usr/local/opt/fzf'
+Plug 'junegunn/fzf.vim'
+call plug#end()
+
+" search git tracked files in current directory
+nnoremap <leader>f :GFiles<CR>
+" search all files
+nnoremap <leader>F :Files<CR>
+" Search open buffers
+nnoremap <leader>b :Buffers<CR>
+" Search through buffer history
+nnoremap <leader>h :History<CR>
+" Search lines in the current buffer
+nnoremap <leader>l :BLines<CR>
+" Search lines in all loaded buffers
+nnoremap <leader>L :Lines<CR>
+" Search for marked lines
+nnoremap <leader>' :Marks<CR>
+" Search through any command history, user-defined, plugins, native
+nmap <Leader>C :Commands<CR>
+" Search through :command history
+nnoremap <Leader>: :History:<CR>
+" Search through / search history
+nnoremap <Leader>/ :History/<CR>
+" Fuzzy search mappings to check if one exists
+nnoremap <Leader>M :Maps<CR>
+" Fuzzy search filetype syntaxes, and hit Enter on a result to set that syntax on the current buffer:
+nnoremap <Leader>t :Filetypes<CR>
+
+
 set tildeop
 set wildmenu
 " my favourite feature. The reason I love Vim. Prevent the cursor from hitting the top or bottom of the page.
 set scrolloff=10
 set gdefault
-set gfn=InconsolataLGC:h12
+" set gfn=InconsolataLGC:h12
 
 set guioptions=egt
 set guioptions+=i    " use a Vim icon
 set guioptions-=m    " don't use the menubar
 set guioptions-=rR   " don't show the scrollbars
-
-" TODO: These settings are throwing an error on starting up nvim
-"let g:indent_guides_enable_on_vim_startup=1
-"let g:indent_guides_guide_size = 1
-"let g:indent_guides_color_change_percent = 8
-"let g:indent_guides_start_level = 2
-"let g:indent_guides_exclude_filetypes = ['help', 'markdown']
 
 " Use Markdown in Vim
 let g:vim_markdown_folding_disabled=1
@@ -155,9 +194,17 @@ let g:vim_markdown_folding_disabled=1
 nnoremap <silent><ESC> :nohl<CR><C-l>
 nnoremap <Leader>x :nohl<CR>
 
+" If I want help, I'll type help. Accidental help is annoying.
 nnoremap <F1> <Nop>
 vnoremap <F1> <Nop>
 cnoremap <F1> <Nop>
+
+" holy shit, if I want to quit I'll do it myself! Happens accidentally way too often.
+nnoremap <c-z> <Nop>
+vnoremap <c-z> <Nop>
+cnoremap <c-z> <Nop>
+
+" plugins for interacting with Maya #TODO: Fix this. These are out of date.
 nnoremap <F2> :Vim2MayaPython<cr>
 vnoremap <F2> :Vim2MayaPython<cr>
 nnoremap <Leader>= :Vim2MayaPython<cr>
@@ -171,26 +218,17 @@ vnoremap <F3> :Undo2Maya<cr>
 " explore my buffers using plugins
 :nnoremap <Leader>j :BufExplorer<CR>
 
-" Unite
-let g:unite_source_history_yank_enable = 1
-call unite#filters#matcher_default#use(['matcher_fuzzy'])
-nnoremap <leader>ut :<C-u>Unite -split -buffer-name=files   -start-insert file_rec/async:!<cr>
-nnoremap <leader>uf :<C-u>Unite -split -start-insert -buffer-name=files   -start-insert file<cr>
-nnoremap <leader>ur :<C-u>Unite -split -start-insert -buffer-name=mru     -start-insert file_mru<cr>
-nnoremap <leader>uo :<C-u>Unite -split -start-insert -buffer-name=outline -start-insert outline<cr>
-nnoremap <leader>uy :<C-u>Unite -split -buffer-name=yank    history/yank<cr>
-nnoremap <leader>ub :<C-u>Unite -split -start-insert -auto-preview -buffer-name=buffer  buffer<cr>
-nnoremap <leader>ug :Unite grep:.<cr>
+let g:netrw_banner = 0
+let g:netrw_liststyle = 4
+let g:netrw_browse_split = 4
+let g:netrw_altv = 1
+let g:netrw_winsize = 25
 
-" Custom mappings for the unite buffer
-autocmd FileType unite call s:unite_settings()
-function! s:unite_settings()
-  " Play nice with supertab
-  let b:SuperTabDisabled=1
-  " Enable navigation with control-j and control-k in insert mode
-  imap <buffer> <C-j>   <Plug>(unite_select_next_line)
-  imap <buffer> <C-k>   <Plug>(unite_select_previous_line)
-endfunction
+set wildignore=*.pyc
+let g:netrw_list_hide = '\.pyc$,'
+let g:netrw_list_hide .= '\.pyc\s\+,'
+
+set rtp+=/usr/local/opt/fzf
 
 " show my existing marks with vim-signature
 ":nnoremap <silent><Leader>m :SignatureToggleSigns<CR>
@@ -200,26 +238,27 @@ let g:ctrlp_working_path_mode = 'c' " uses the CWD as the path
 let g:ctrlp_follow_symlinks=1
 let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:10,results:20'
 let g:ctrlp_switch_buffer = 0 " if buffer is already open do NOT jump to it.
+let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""' " use Silver Searcher (ag)
 :nnoremap <Leader>oo :CtrlP C:/Users/clesage/docs/<CR>
 :nnoremap <Leader>or :CtrlPMRU<CR>
 :nnoremap <Leader>ob :CtrlPBuffer<CR>
 :nnoremap <Leader>ot :CtrlPTag<CR>
 
 " explore with NERDTree
-:nnoremap <Leader>h :NERDTreeToggle<CR>
-:nnoremap <Leader>f :NERDTreeFind<CR>
-let NERDTreeWinSize=50
-let NERDTreeMinimalUI=0
+":nnoremap <Leader>h :NERDTreeToggle<CR>
+":nnoremap <Leader>f :NERDTreeFind<CR>
+"let NERDTreeWinSize=50
+"let NERDTreeMinimalUI=0
 
 " traverse my buffers
 :nnoremap <C-Tab> :bnext<cr>
 :nnoremap <C-S-Tab> :bprevious<cr>
 
-" ex_mode/history-scrollers (<C-p> and <C-n> don't filter history)
+" scroll command history with up and down arrows (<C-p> and <C-n> don't filter history)
 cnoremap <C-p> <Up>
 cnoremap <C-n> <Down>
 
-" type %% to expand the current buffer directory
+" type %% to expand the current buffer directory in the command line
 " this works well with :edit and :write, etc.
 cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 
@@ -244,45 +283,46 @@ vmap <Leader>P "+P
 " makes Y consistent with D and C (from cursor to end of line.)
 nnoremap Y y$
 
-" Type <leader>w to save file (lot faster than :w<Enter>):
+" Type <leader>w to save file ( instead of :w<Enter>):
 nnoremap <Leader>w :w<CR>
 
 "set listchars=eol:⏎,tab:▫·,trail:~,extends:>,precedes:<
-set list listchars=extends:+,tab:▏\ ,trail:❌ 
+set list listchars=extends:+,tab:▏\ ,trail:X
 " toggle invisibles but keep them off by default
 :nnoremap <Leader>i :set list!<CR>
 set nolist
 
-" Start the Corna Simulator with F3 for iPhone skin. Shift-F3 for iPad skin.
-map <F6> :!/Applications/CoronaSDK/Corona%20Simulator -project %:p -skin iPhone<CR>
-map <S-F6> :!/Applications/CoronaSDK/Corona%20Simulator -project %:p -skin iPad<CR>
-
+" please stop moving my cursor.
 :inoremap <F2> <Esc>l<F2>
 :inoremap <F3> <Esc>l<F3>
 :inoremap <F4> <Esc>l<F4>
-:inoremap <f5> <Esc>l<F5>
+:inoremap <F5> <Esc>l<F5>
 
 " unmap select-all in Normal Mode, so you can increment numbers with Ctrl-a
 ":nunmap <C-A>
 
-" the following maps the Ctrl + Arrow Keys to jumping across window splits
+" the following maps the Ctrl + Arrow Keys to jump across window splits
 map <c-Down> <c-w>j
 map <c-Up> <c-w>k
 map <c-Right> <c-w>l
 map <c-Left> <c-w>h
-autocmd FileType python set omnifunc=pythoncomplete#Complete
 
-"Pythonic folding based on identation
+" I don't know what this is.
+autocmd FileType python set omnifunc=pythoncomplete#Complete
+" Pythonic folding based on identation
 :set foldmethod=indent
-"not sure what this does
+" not sure what this does
 :set foldlevel=99
 
 " Indent Guides options (plugin)
 let g:indent_guides_guide_size = 1
 let g:indent_guides_start_level = 2
 let g:indent_guides_enable_on_vim_startup = 1
+let g:indent_guides_color_change_percent = 8
+let g:indent_guides_exclude_filetypes = ['help', 'markdown']
 
-" remap start and end of line to something more memorable
+
+" remap start and end of line to something more memorable. I don't miss these default motions.
 nnoremap B ^
 nnoremap E $
 
@@ -316,30 +356,21 @@ endif
 " Always show the status line
 set laststatus=2
 
-set statusline=\ »\ %t "filename
-set statusline+=%m%r%h%w " modified flag
-set statusline+=%=        " Switch to the right side
-set statusline+=»\ %{getcwd()}%h\ \ »\  " current working directory
-set statusline+=%l        " Current line
-set statusline+=/         " Separator
-set statusline+=%L        " Total lines
-set statusline+=\ -\ %1p%%\  " line number and percentage
-
-
-" Alternate status line (from FS)
+" Status line formatting
 hi User1 guifg=#000000 guibg=#74d6d7 gui=boldreverse
-set laststatus=2          " Always show the status line
+set laststatus=2               " Always show the status line
 set statusline=\ >\ [%Y]\ %t\  "filetype %Y and filename %t
-set statusline+=%1*  "switch to User1 highlight
-set statusline+=%m%r%h%w " modified flag
-set statusline+=%*       "switch back to normal statusline highlight
+set statusline+=%1*            "switch to User1 highlight
+set statusline+=%m%r%h%w       " modified flag
+set statusline+=%*             "switch back to normal statusline highlight
 
-set statusline+=%=        " Switch to the right side
+set statusline+=%=             " Switch to the right side
 set statusline+=>\ %{getcwd()}%h\ \ >\  " current working directory
-set statusline+=%l        " Current line
-set statusline+=/         " Separator
-set statusline+=%L        " Total lines
-set statusline+=\ -\ %1p%%\  " line number and percentage
+set statusline+=%l             " Current line
+set statusline+=/              " Separator
+set statusline+=%L             " Total lines
+set statusline+=\ [%c]         " Column position
+set statusline+=\ -\ %1p%%\    " line number and percentage
 
 set titlestring=[%Y]\ \ %t\ %a%r%h%w%m
 
@@ -381,9 +412,32 @@ if has("autocmd")
   endif
 endif
 
-" map search so it centers the results in the screen.
-nnoremap n nzz
-nnoremap N Nzz
-nnoremap # #zz
-nnoremap g* g*zz
-nnoremap g# g#zz
+
+" Quick run via <F5>
+nnoremap <leader>e :call <SID>compile_and_run()<CR>
+
+augroup SPACEVIM_ASYNCRUN
+    autocmd!
+    " Automatically open the quickfix window
+    autocmd User AsyncRunStart call asyncrun#quickfix_toggle(15, 1)
+augroup END
+
+function! s:compile_and_run()
+    exec 'w'
+    if &filetype == 'c'
+        exec "AsyncRun! gcc % -o %<; time ./%<"
+    elseif &filetype == 'cpp'
+       exec "AsyncRun! g++ -std=c++11 % -o %<; time ./%<"
+    elseif &filetype == 'java'
+       exec "AsyncRun! javac %; time java %<"
+    elseif &filetype == 'sh'
+       exec "AsyncRun! time bash %"
+    elseif &filetype == 'python'
+       exec "AsyncRun! time python3 %"
+    endif
+endfunction
+
+" a dumb hack to force iceking to refresh properly. Set one then the other.
+colorscheme monokai
+colorscheme iceking
+
