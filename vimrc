@@ -47,6 +47,12 @@ set termguicolors
 set backspace=indent,eol,start
 let macvim_hig_shift_movement = 1
 
+" scroll a bit more smoothly
+" C-U and C-D jump by a full page. This goes by 10 lines instead
+" The j and k keeps the cursor position where it was
+:map <C-U> <C-Y>k<C-Y>k<C-Y>k<C-Y>k<C-Y>k<C-Y>k<C-Y>k<C-Y>k<C-Y>k<C-Y>k
+:map <C-D> <C-E>j<C-E>j<C-E>j<C-E>j<C-E>j<C-E>j<C-E>j<C-E>j<C-E>j<C-E>j
+
 " put all swap and backup in a defined folder instead of peppering files everywhere.
 set backupdir=~/.vim/backup
 set directory=~/.vim/swap
