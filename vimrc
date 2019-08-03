@@ -140,6 +140,7 @@ set ignorecase
 " try to be smart about case when searching
 set smartcase
 
+" Count the occurences of the currently searched word.
 nnoremap <leader>8 :%s///n<CR><C-o>
 
 " Tagbar plugin
