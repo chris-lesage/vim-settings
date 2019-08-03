@@ -52,10 +52,6 @@ set backupdir=~/.vim/backup
 set directory=~/.vim/swap
 set shortmess+=I
 
-let g:tagbar_ctags_bin='/usr/local/bin/ctags'  " Proper Ctags locations
-let g:tagbar_width=40                          " Default is 40, seems too wide
-noremap <silent><Leader>\ :TagbarToggle<cr>
-
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
 " append paths to common scripting places
@@ -102,13 +98,14 @@ if $TERM_PROGRAM =~ "iTerm"
     let &t_EI = "\<Esc>]50;CursorShape=0\x7" " Block in normal mode
 endif
 
-" When leaving buffer, set to absolute numbers. This is very useful for copying static lines to relative positions in the current buffer when in split mode
+" When switching windows, set to absolute numbers. This is very useful for copying
+" static lines to relative positions in the same buffer when in split mode.
 " AND it is useful as a visual clue where your focus is.
-au BufEnter * set relativenumber
-au BufLeave * set norelativenumber
+au WinEnter * set relativenumber
+au WinLeave * set norelativenumber
 " Same for cursorline. Help me see which split I am currently in.
-au BufEnter * set cursorline
-au BufLeave * set nocursorline
+au WinEnter * set cursorline
+au WinLeave * set nocursorline
 
 inoremap jk <ESC>
 " use the tab key for jumping between parentheses.
@@ -139,6 +136,9 @@ set smartcase
 
 nnoremap <leader>8 :%s///n<CR><C-o>
 
+" Tagbar plugin
+let g:tagbar_width=40                          " Default is 40, seems too wide
+noremap <silent><Leader>t :TagbarToggle<cr>
 
 " fzf and vim-plug
 set rtp+=/usr/local/opt/fzf
@@ -148,29 +148,38 @@ Plug 'junegunn/fzf.vim'
 call plug#end()
 
 " search git tracked files in current directory
-nnoremap <leader>f :GFiles<CR>
-" search all files
-nnoremap <leader>F :Files<CR>
+nnoremap <leader>g :GFiles<CR>
+" search all files in current directory
+nnoremap <leader>f :Files<CR>
+" search all git tracked files but allow to specify a root search directory
+nnoremap <leader>G :GFiles 
+" search all files but allow to specify a root search directory
+nnoremap <leader>F :Files 
 " Search open buffers
 nnoremap <leader>b :Buffers<CR>
 " Search through buffer history
 nnoremap <leader>h :History<CR>
-" Search lines in the current buffer
-nnoremap <leader>l :BLines<CR>
-" Search lines in all loaded buffers
-nnoremap <leader>L :Lines<CR>
+" Search lines in the current buffer, like Scoop in Spacemacs <SEARCH SEARCH>
+nnoremap <leader>ss :BLines<CR>
+" Search lines in all loaded buffers <SEARCH ALL>
+nnoremap <leader>sa :Lines<CR>
 " Search for marked lines
 nnoremap <leader>' :Marks<CR>
 " Search through any command history, user-defined, plugins, native
 nmap <Leader>C :Commands<CR>
 " Search through :command history
-nnoremap <Leader>: :History:<CR>
+nnoremap <Leader>; :History:<CR>
 " Search through / search history
 nnoremap <Leader>/ :History/<CR>
 " Fuzzy search mappings to check if one exists
 nnoremap <Leader>M :Maps<CR>
 " Fuzzy search filetype syntaxes, and hit Enter on a result to set that syntax on the current buffer:
 nnoremap <Leader>t :Filetypes<CR>
+" fuzzy find text in the working directory
+nnoremap <leader>r :Rg<CR>
+
+" Quickly jump through buffers with no plugins
+nnoremap gb :ls<CR>:b<Space>
 
 
 set tildeop
@@ -186,9 +195,14 @@ set guioptions-=m    " don't use the menubar
 set guioptions-=rR   " don't show the scrollbars
 
 " Use Markdown in Vim
-let g:vim_markdown_folding_disabled=1
+
+
+" vim-gitgutter plugin
+" Update faster. Default is 4 seconds.
+set updatetime=100
+
 " Auto populate a path for Markdown notes
-:nnoremap <Leader>k :echo strftime('/net/homes/clesage/notes/note-%F.md')<CR>
+" :nnoremap <Leader>k :echo strftime('/net/homes/clesage/notes/note-%F.md')<CR>
 
 " remove highlighting from previous searches
 nnoremap <silent><ESC> :nohl<CR><C-l>
@@ -316,11 +330,12 @@ autocmd FileType python set omnifunc=pythoncomplete#Complete
 
 " Indent Guides options (plugin)
 let g:indent_guides_guide_size = 1
-let g:indent_guides_start_level = 2
+let g:indent_guides_start_level = 3
 let g:indent_guides_enable_on_vim_startup = 1
 let g:indent_guides_color_change_percent = 8
 let g:indent_guides_exclude_filetypes = ['help', 'markdown']
 
+let g:indent_guides_auto_colors = 1
 
 " remap start and end of line to something more memorable. I don't miss these default motions.
 nnoremap B ^
@@ -441,3 +456,5 @@ endfunction
 colorscheme monokai
 colorscheme iceking
 
+
+:set fillchars=vert:\ 
