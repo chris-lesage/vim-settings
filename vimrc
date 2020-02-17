@@ -50,8 +50,11 @@ let macvim_hig_shift_movement = 1
 " scroll a bit more smoothly
 " C-U and C-D jump by a full page. This goes by 10 lines instead
 " The j and k keeps the cursor position where it was
-:map <C-U> <C-Y>k<C-Y>k<C-Y>k<C-Y>k<C-Y>k<C-Y>k<C-Y>k<C-Y>k<C-Y>k<C-Y>k
-:map <C-D> <C-E>j<C-E>j<C-E>j<C-E>j<C-E>j<C-E>j<C-E>j<C-E>j<C-E>j<C-E>j
+:map <C-U> k<C-Y>k<C-Y>k<C-Y>k<C-Y>k<C-Y>k<C-Y>k<C-Y>k<C-Y>k<C-Y>k<C-Y>
+:map <C-D> j<C-E>j<C-E>j<C-E>j<C-E>j<C-E>j<C-E>j<C-E>j<C-E>j<C-E>j<C-E>
+" Also map C-J and C-K which is easier to remember.
+:map <C-K> k<C-Y>k<C-Y>k<C-Y>k<C-Y>k<C-Y>k<C-Y>k<C-Y>k<C-Y>k<C-Y>k<C-Y>
+:map <C-J> j<C-E>j<C-E>j<C-E>j<C-E>j<C-E>j<C-E>j<C-E>j<C-E>j<C-E>j<C-E>
 
 " put all swap and backup in a defined folder instead of peppering files everywhere.
 set backupdir=~/.vim/backup
@@ -203,6 +206,13 @@ set guioptions-=rR   " don't show the scrollbars
 
 " Use Markdown in Vim
 
+" Auto create a path to Markdown notes as a dated journal/log.
+function! OpenLog()
+  let l:fname = '~/Dropbox/journal/log-' . strftime('%Y-%m-%d') . '.md'
+  silent execute 'e' l:fname
+  echomsg 'Editing' l:fname
+endfunction
+nnoremap <Leader>k :<C-U>call OpenLog()<CR>
 
 " vim-gitgutter plugin
 " Update faster. Default is 4 seconds.
